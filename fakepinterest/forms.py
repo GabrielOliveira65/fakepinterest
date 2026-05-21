@@ -17,6 +17,9 @@ class FormLogin(FlaskForm):
         email = Usuario.query.filter_by(email=email_username.data).first()
         if not usuario and not email:
             raise ValidationError('E-mail ou Usuário não existe.')
+    
+    def validate_email_username(self, field):
+        field.data = field.data.strip().lower()
         
 
 

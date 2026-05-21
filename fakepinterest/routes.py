@@ -11,7 +11,7 @@ import io
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
     if current_user.is_authenticated:
-        return redirect(url_for('user_profile'))
+        return redirect(url_for('feed'))
     form_login = FormLogin()
     if form_login.validate_on_submit():
         if '@' in form_login.email_username.data:
@@ -20,7 +20,7 @@ def homepage():
             usuario = Usuario.query.filter_by(username=form_login.email_username.data).first()
         if usuario and bcrypt.check_password_hash(usuario.senha.encode("utf-8"), form_login.senha.data):
             login_user(usuario)
-            return redirect(url_for('feed'))
+            return redirect(url_for('user_profile'))
         else:
             flash("Senha incorreta", 'alert-danger')
     return render_template('homepage.html', form=form_login)

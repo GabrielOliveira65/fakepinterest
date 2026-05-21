@@ -7,6 +7,7 @@ O FakePinterest é uma aplicação web full-stack desenvolvida com Python e Flas
 A plataforma permite que usuários criem contas, façam login e compartilhem imagens em formato de “pins”, além de visualizar conteúdos publicados por outros usuários.
 
 Este projeto foi desenvolvido com o objetivo de consolidar conhecimentos em desenvolvimento web, autenticação, manipulação de arquivos e integração com serviços externos.
+
 ---
 ## Demonstração
 

@@ -1,0 +1,17 @@
+{%extends "homepage.html"%}
+
+{%block titulo%}
+    Feed - FakePinterest
+{%endblock%}
+
+{%block body%}
+<div class="conteudo">
+    {%for foto in fotos%}
+    <div class="bloco-imagem">
+        <a href="{{url_for('visualizar_foto', id=foto.id)}}">
+            <img src="{{ url_for('static', filename='imagens/{}'.format(foto.imagem)) }}"></a>
+    </div>
+    {%endfor%}
+</div>
+
+{%endblock%}

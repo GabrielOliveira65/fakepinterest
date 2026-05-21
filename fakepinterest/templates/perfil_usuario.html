@@ -1,0 +1,65 @@
+{%extends 'base.html'%}
+
+{%block titulo%}
+    Meu Perfil - FakePinterest
+{%endblock%}
+
+{%block body%}
+{%include 'navbar.html'%}
+
+<div class="container">
+    {% if form%}
+        <form method="POST" enctype="multipart/form-data" action="" class="bloco-add-img">
+            {{ form.csrf_token }}
+            <h2>{{ usuario.vUsername }} - Enviar foto</h2>
+            <div class="bloco-arquivo">
+            <label for="foto" class="botao-arquivo">
+                Escolher arquivo
+                {{form.imagem(accept="image/*", class="input-arquivo", id="foto" )}}
+            </label>
+            <span id="imagem-arquivo" class=""></span>
+            </div>
+            {{form.enviar_foto(class="botao-login")}}
+        </form>  
+    {%else%}
+        <div class="bloco-add-img">
+            <h2> {{usuario.vUsername}} - Ver Perfil</h2>
+    {%endif%}
+
+    <div class="conteudo">
+    {%for foto in fotos%}
+    {%if foto.deleted == False %}
+        <div class="bloco-imagem">
+            <a href="{{url_for('visualizar_foto', id=foto.id)}}">
+                <img src="{{ url_for('static', filename='imagens/{}'.format(foto.imagem)) }}" />
+            </a>
+            
+                {%if form%}
+                <p>Upload: {{foto.data_criacao.strftime('%H:%M %d/%m/%Y')}}
+                <a href="{{url_for('excluir_foto', id=foto.id)}}" 
+                onclick="return confirm('Tem certeza que deseja excluir esta imagem?')">
+                    <img class="icone-lixeira" src="{{url_for('static', filename='elementos_site/trash-can-solid.png')}}" 
+                        style="width: 1em;height: 1em; vertical-align: text-bottom;" alt="Excluir Imagem" title="Excluir imagem">
+                </a>
+                </p>
+                {%else%}
+                <p>Upload: {{foto.data_criacao.strftime('%d/%m/%Y')}}
+                {%endif%}
+            
+        </div>
+        {%endif %}
+    {%endfor%}
+    </div>
+</div>
+    <script>
+      let input = document.getElementById("foto");
+      let imagemArquivo = document.getElementById("imagem-arquivo");
+
+      input.addEventListener("change", () => {
+        let inputImagem = document.querySelector("input[type=file]").files[0];
+
+        imagemArquivo.classList.add("visivel");
+        imagemArquivo.innerText = inputImagem.name;
+      });
+    </script>
+{%endblock%}

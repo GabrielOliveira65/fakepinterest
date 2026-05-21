@@ -1,0 +1,98 @@
+from flask import render_template, url_for, redirect, flash, abort
+from fakepinterest import app, database, bcrypt
+from flask_login import login_required, login_user, logout_user, current_user
+from fakepinterest.forms import FormLogin, FormCriarConta, PostFoto
+from fakepinterest.models import Usuario, Foto
+import os
+from werkzeug.utils import secure_filename
+
+@app.route('/', methods=['GET', 'POST'])
+def homepage():
+    form_login = FormLogin()
+    if form_login.validate_on_submit():
+        if '@' in form_login.email_username.data:
+            usuario = Usuario.query.filter_by(email=form_login.email_username.data).first()
+        else:
+            usuario = Usuario.query.filter_by(username=form_login.email_username.data).first()
+        if usuario and bcrypt.check_password_hash(usuario.senha, form_login.senha.data):
+            login_user(usuario)
+            return redirect(url_for('user_profile'))
+        else:
+            flash("Senha incorreta", 'alert-danger')
+    return render_template('homepage.html', form=form_login)
+    
+@app.route('/registrar', methods=['GET', 'POST'])
+def criarconta():
+    form_criarconta = FormCriarConta()
+    if form_criarconta.validate_on_submit():
+        senha = bcrypt.generate_password_hash(form_criarconta.senha.data)
+        usuario = Usuario(username=form_criarconta.username.data.lower(), email=form_criarconta.email.data, senha=senha, vUsername=form_criarconta.username.data)
+        database.session.add(usuario)
+        database.session.commit()
+        login_user(usuario, remember=True)
+        return redirect(url_for('user_profile'))
+    return render_template('criar_conta.html', form=form_criarconta)
+
+@app.route('/perfil')
+@login_required
+def user_profile():
+    return redirect(url_for('perfil', usuario=current_user.username))
+
+@app.route('/perfil/<usuario>', methods=['GET', 'POST'])
+@login_required
+def perfil(usuario):
+    if usuario == current_user.username or usuario == current_user.vUsername:
+        form_foto = PostFoto()
+        if form_foto.validate_on_submit():
+            arquivo = form_foto.imagem.data
+            nome_arquivo = secure_filename(arquivo.filename)
+            caminho = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config["UPLOAD_FOLDER"], nome_arquivo)
+            arquivo.save(caminho)
+            foto = Foto(imagem=nome_arquivo , id_usuario=current_user.id)
+            database.session.add(foto)
+            database.session.commit()
+        fotos = Foto.query.filter_by(deleted=False, id_usuario=current_user.id).order_by(Foto.data_criacao.desc()).all() 
+        return render_template('perfil_usuario.html', usuario=current_user, form=form_foto, fotos=fotos)   
+    else:
+        usuario = Usuario.query.filter(Usuario.username.ilike(usuario)).first()
+        if usuario:
+            fotos = Foto.query.filter_by(deleted=False, id_usuario=usuario.id).order_by(Foto.data_criacao.desc()).all() 
+            return render_template('perfil_usuario.html', usuario=usuario, form=None, fotos=fotos)  
+        else:
+            fotos = Foto.query.filter_by(deleted=False, id_usuario=current_user.id).order_by(Foto.data_criacao.desc()).all() 
+            return render_template('perfil_usuario.html', usuario=current_user, form=form_foto, fotos=fotos)  
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('homepage'))
+
+
+@app.route('/feed')
+@login_required
+def feed():
+    fotos = Foto.query.filter_by(deleted=False).order_by(Foto.data_criacao.desc()).all()
+    return render_template("feed.html", fotos=fotos)
+
+@app.route('/excluir_foto/<id>')
+@login_required
+def excluir_foto(id):
+    foto = Foto.query.get_or_404(id)
+    if current_user == foto.usuario:
+        print("O usuario é o dono da foto")
+        foto.deleted = True
+        database.session.commit()
+        return redirect(url_for('user_profile'))
+    else:
+        print("Não é o dono da foto")
+        return redirect(url_for('user_profile'))
+    
+@app.route('/foto/<id>')
+@login_required
+def visualizar_foto(id):
+    foto = Foto.query.get_or_404(id)
+    if foto.deleted == False:
+        return render_template('foto.html', foto=foto)
+    else:
+        return redirect(url_for('feed'))

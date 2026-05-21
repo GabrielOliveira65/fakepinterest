@@ -10,6 +10,8 @@ import io
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
+    if current_user.is_authenticated:
+        return redirect(url_for('user_profile'))
     form_login = FormLogin()
     if form_login.validate_on_submit():
         if '@' in form_login.email_username.data:

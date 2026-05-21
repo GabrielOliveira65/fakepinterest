@@ -5,6 +5,8 @@ from fakepinterest.forms import FormLogin, FormCriarConta, PostFoto
 from fakepinterest.models import Usuario, Foto
 import os
 from werkzeug.utils import secure_filename
+import cloudinary.uploader
+import io
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
@@ -38,6 +40,10 @@ def criarconta():
 def user_profile():
     return redirect(url_for('perfil', usuario=current_user.username))
 
+def salvar_imagem(imagem):
+    resultado = cloudinary.uploader.upload(imagem)
+    return resultado['secure_url']
+
 @app.route('/perfil/<usuario>', methods=['GET', 'POST'])
 @login_required
 def perfil(usuario):
@@ -45,10 +51,8 @@ def perfil(usuario):
         form_foto = PostFoto()
         if form_foto.validate_on_submit():
             arquivo = form_foto.imagem.data
-            nome_arquivo = secure_filename(arquivo.filename)
-            caminho = os.path.join(os.path.abspath(os.path.dirname(__file__)), app.config["UPLOAD_FOLDER"], nome_arquivo)
-            arquivo.save(caminho)
-            foto = Foto(imagem=nome_arquivo , id_usuario=current_user.id)
+            url = salvar_imagem(arquivo)
+            foto = Foto(imagem=url , id_usuario=current_user.id)
             database.session.add(foto)
             database.session.commit()
         fotos = Foto.query.filter_by(deleted=False, id_usuario=current_user.id).order_by(Foto.data_criacao.desc()).all() 

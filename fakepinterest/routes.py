@@ -9,15 +9,11 @@ from werkzeug.utils import secure_filename
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
     form_login = FormLogin()
-    print("A")
     if form_login.validate_on_submit():
-        print("A")
-        print(form_login.email_username.data.lower())
         if '@' in form_login.email_username.data:
             usuario = Usuario.query.filter_by(email=form_login.email_username.data).first()
         else:
-            usuario = Usuario.query.filter_by(username=form_login.email_username.data.lower()).first()
-            print(form_login.email_username.data.lower())
+            usuario = Usuario.query.filter_by(username=form_login.email_username.data).first()
         if usuario and bcrypt.check_password_hash(usuario.senha, form_login.senha.data):
             login_user(usuario)
             return redirect(url_for('user_profile'))

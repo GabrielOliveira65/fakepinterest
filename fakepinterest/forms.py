@@ -44,6 +44,6 @@ class FormCriarConta(FlaskForm):
         
 
 class PostFoto(FlaskForm):
-    imagem = FileField('Foto', validators=[DataRequired(),  FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Apenas imagens são permitidas!')])
+    imagem = FileField('Foto', validators=[DataRequired(),  FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Apenas imagens são permitidas!')])
     enviar_foto = SubmitField('Enviar')
     

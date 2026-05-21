@@ -57,6 +57,7 @@ def perfil(usuario):
             foto = Foto(imagem=url , id_usuario=current_user.id)
             database.session.add(foto)
             database.session.commit()
+            return redirect(url_for('user_profile'))
         fotos = Foto.query.filter_by(deleted=False, id_usuario=current_user.id).order_by(Foto.data_criacao.desc()).all() 
         return render_template('perfil_usuario.html', usuario=current_user, form=form_foto, fotos=fotos)   
     else:

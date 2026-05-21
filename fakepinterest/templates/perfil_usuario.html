@@ -17,6 +17,13 @@
                 Escolher arquivo
                 {{form.imagem(accept="image/*", class="input-arquivo", id="foto" )}}
             </label>
+            {% if form.imagem.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for erro in form.imagem.errors %}
+                        <p>{{ erro }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <span id="imagem-arquivo" class=""></span>
             </div>
             {{form.enviar_foto(class="botao-login")}}

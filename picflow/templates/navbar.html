@@ -1,0 +1,26 @@
+<header>
+        <nav>
+       
+          <div class="logo-picflow" >
+            <a href="{{url_for('feed')}}" style="text-decoration: none;">
+            <img 
+              src="{{ url_for('static', filename='elementos_site/logonav.png') }}" 
+              height="40" 
+              width="40"
+              style="display: block;"
+          >
+            </a>
+            <a href="{{url_for('feed')}}" style="text-decoration: none;"><h1>PicFlow</h1></a>
+          </div>
+          
+
+          <div class="restante-nav">
+            <a href="https://postify.up.railway.app" class="link-nav">Comunidade Postify</a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('user_profile') }}" class="link-nav">Meu perfil</a>
+            <a href="{{ url_for('logout') }}" class="link-nav">Sair</a>
+            {% endif %}
+          </div>
+        </nav>
+      </header>
+      <hr>

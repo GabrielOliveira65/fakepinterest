@@ -1,4 +1,4 @@
-from fakepinterest import database, login_manager
+from picflow import database, login_manager
 from datetime import datetime, timezone
 from flask_login import UserMixin
 from sqlalchemy.orm import validates

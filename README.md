@@ -1,8 +1,8 @@
-# FakePinterest
+# PicFlow
 
 ## Sobre o Projeto
 
-O FakePinterest é uma aplicação web full-stack desenvolvida com Python e Flask, inspirada na proposta do Pinterest.
+O PicFlow é uma aplicação web full-stack desenvolvida com Python e Flask, inspirada na proposta do Pinterest.
 
 A plataforma permite que usuários criem contas, façam login e compartilhem imagens em formato de “pins”, além de visualizar conteúdos publicados por outros usuários.
 

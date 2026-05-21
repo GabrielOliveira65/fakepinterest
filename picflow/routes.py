@@ -1,8 +1,8 @@
 from flask import render_template, url_for, redirect, flash, abort
-from fakepinterest import app, database, bcrypt
+from picflow import app, database, bcrypt
 from flask_login import login_required, login_user, logout_user, current_user
-from fakepinterest.forms import FormLogin, FormCriarConta, PostFoto
-from fakepinterest.models import Usuario, Foto
+from picflow.forms import FormLogin, FormCriarConta, PostFoto
+from picflow.models import Usuario, Foto
 import os
 from werkzeug.utils import secure_filename
 import cloudinary.uploader

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% include 'navbar.html'%}
+
+{%block titulo%}
+  Início - PicFlow
+{%endblock%}
+
+{%block body%}
+  <body class="overflow-hidden">
+    <div class="container">
+      {%block form%}
+      <div class="container-popup">
+        <form method="POST" action="", class="popup">
+            {{ form.csrf_token }}
+          <img 
+              src="{{ url_for('static', filename='elementos_site/logo.png') }}" 
+              height="40" 
+              width="40"
+              style="display: block;"
+          >
+          <h2>Bem-vindo(a) ao PicFlow</h2>
+
+          <div class="div-input">
+            {{form.email_username.label(class='label')}}
+              {%if form.email_username.errors %}
+                {% for erro in form.email_username.errors %}  
+                  <p style="color: red">{{erro}}</p>
+                {%endfor%}
+              {%endif%}
+            {{form.email_username(class='input')}}
+          </div>
+
+          <div class="div-input">
+            {{form.senha.label(class='label')}}
+            
+            {% with mensagens = get_flashed_messages(with_categories=True) %}
+                {% if mensagens %}
+                    {% for categoria, mensagem in mensagens: %}
+                    <p style="color:red">{{ mensagem }}</p>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+             
+            {%if form.senha.errors %}
+                {% for erro in form.senha.errors %}  
+                  <p style="color: red">{{erro}}</p>
+                {%endfor%}
+              {%endif%}
+            {{form.senha(class='input')}}
+          </div>
+          
+          <div>
+            {{form.lembrar_dados.label}}
+            {{form.lembrar_dados()}}
+          </div>  
+          <div class="div-botao">
+            {{form.botao_submit_login(class="botao-login")}}
+            <a href="{{url_for('criarconta')}}" class="link-criarconta">Não tem uma conta? Crie aqui</a>
+          </div>
+        </form>
+      </div>
+      {%endblock%}
+    </div>
+  </body>
+{%endblock%}
+</html>
+
+
+
+

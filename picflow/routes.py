@@ -49,7 +49,13 @@ def salvar_imagem(imagem):
 @app.route('/perfil/<usuario>', methods=['GET', 'POST'])
 @login_required
 def perfil(usuario):
-    if usuario == current_user.username or usuario == current_user.vUsername:
+    usuario_data = Usuario.query.filter(Usuario.username.ilike(usuario)).first()
+    if not usuario_data:
+        return redirect(url_for('user_profile'))
+    
+    fotos = Foto.query.filter_by(deleted=False, id_usuario=usuario_data.id).order_by(Foto.data_criacao.desc()).all() 
+
+    if usuario_data.id == current_user.id:
         form_foto = PostFoto()
         if form_foto.validate_on_submit():
             arquivo = form_foto.imagem.data
@@ -58,16 +64,10 @@ def perfil(usuario):
             database.session.add(foto)
             database.session.commit()
             return redirect(url_for('user_profile'))
-        fotos = Foto.query.filter_by(deleted=False, id_usuario=current_user.id).order_by(Foto.data_criacao.desc()).all() 
-        return render_template('perfil_usuario.html', usuario=current_user, form=form_foto, fotos=fotos)   
+        return render_template('perfil_usuario.html', usuario=current_user, form=form_foto, fotos=fotos)
+       
     else:
-        usuario = Usuario.query.filter(Usuario.username.ilike(usuario)).first()
-        if usuario:
-            fotos = Foto.query.filter_by(deleted=False, id_usuario=usuario.id).order_by(Foto.data_criacao.desc()).all() 
-            return render_template('perfil_usuario.html', usuario=usuario, form=None, fotos=fotos)  
-        else:
-            fotos = Foto.query.filter_by(deleted=False, id_usuario=current_user.id).order_by(Foto.data_criacao.desc()).all() 
-            return render_template('perfil_usuario.html', usuario=current_user, form=form_foto, fotos=fotos)  
+        return render_template('perfil_usuario.html', usuario=usuario_data, form=None, fotos=fotos)  
 
 @app.route('/logout')
 @login_required

@@ -1,5 +1,5 @@
 .venv/
-fakepinterest/__pycache__/
+picflow/__pycache__/
 criardb.py
 instance/
 .env
